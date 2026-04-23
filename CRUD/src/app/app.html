@@ -1,0 +1,78 @@
+<div class="container-principal">
+  <p-card header="Gerenciamento de Perfumes" subheader="Projeto Caru - Interfaces Ricas">
+
+    <div class="formulario-entrada">
+      <div class="campo">
+        <label>Nome do Produto</label>
+        <input pInputText [(ngModel)]="novoItem.nome" placeholder="Ex: Natura Kaiak" />
+      </div>
+
+      <div class="campo">
+        <label>Preço</label>
+        <p-inputNumber [(ngModel)]="novoItem.valor" mode="currency" currency="BRL" locale="pt-BR" />
+      </div>
+
+      <div class="campo-booleano">
+        <label>Em Estoque</label>
+        <p-toggleswitch [(ngModel)]="novoItem.ativo" />
+      </div>
+
+      <div class="acoes-formulario">
+        <p-button
+          [label]="novoItem.id > 0 ? 'Salvar Alteração' : 'Cadastrar Item'"
+          [icon]="novoItem.id > 0 ? 'pi pi-save' : 'pi pi-plus'"
+          severity="success"
+          (click)="adicionar()" />
+
+        @if (novoItem.id > 0) {
+          <p-button
+            label="Cancelar"
+            icon="pi pi-times"
+            severity="secondary"
+            [text]="true"
+            (click)="resetForm()" />
+        }
+      </div>
+    </div>
+
+    <hr class="divisor" />
+
+    <p-table [value]="itens()"[stripedRows]=true>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Preço</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.id }}</td>
+          <td>{{ item.nome }}</td>
+          <td>{{ item.valor | currency: 'BRL' }}</td>
+          <td>
+            <span [class]="item.ativo ? 'tag-disponivel' : 'tag-esgotado'">
+              {{ item.ativo ? 'Disponível' : 'Esgotado' }}
+            </span>
+          </td>
+          <td class="coluna-acoes">
+            <p-button icon="pi pi-pencil" severity="info" [rounded]="true" [outlined]="true" (click)="prepararEdicao(item)" />
+            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="remover(item.id)" />
+          </td>
+        </tr>
+      </ng-template>
+
+      @if (itens().length === 0) {
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5">Nenhum perfume cadastrado no catálogo.</td>
+          </tr>
+        </ng-template>
+      }
+    </p-table>
+
+  </p-card>
+</div>

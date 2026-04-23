@@ -1,0 +1,73 @@
+:host {
+    font-family: var(--p-family);
+    -webkit-font-smoothing: antialiased;
+    color: #334155; /* Um cinza escuro elegante em vez do preto puro */
+}
+
+
+
+.container-principal {
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: var(--p-family);
+}
+
+.formulario-entrada {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.campo-booleano {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.acoes-formulario {
+    display: flex;
+    gap: 0.5rem;
+}
+
+
+.tag-disponivel {
+    color: #15803d;
+    background: #f0fdf4;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.tag-esgotado {
+    color: #b91c1c;
+    background: #fef2f2;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.coluna-acoes {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.divisor {
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+    margin: 2rem 0;
+}
+
