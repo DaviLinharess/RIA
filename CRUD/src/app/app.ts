@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';               //loops e condicionais
 import { FormsModule } from '@angular/forms';                 // forms (inputs)
 
@@ -7,11 +7,11 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';    //booleano bonito
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CardModule } from 'primeng/card';
 
 
-// Interface
+
 interface Item {
   id: number;
   nome: string;
@@ -34,53 +34,45 @@ interface Item {
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
+
 export class App {
+  itens: Item[] = [                                                             // Lista de itens, começa com um exemplo
+    {id: 1, nome: 'Exemplo de Item', valor: 99.90, ativo: true}                 // pra mostrar a tabela preenchida.
+  ];
 
-  // Lista de itens usando Signal (Reatividade nativa)
-  itens = signal<Item[]>([
-    { id: 1, nome: 'Exemplo de Item', valor: 99.90, ativo: true }
-  ]);
+  novoItem: Item = {id: 0, nome: '', valor: 0, ativo: true};                    // Objeto para armazenar os dados, começa vazio.
 
-  // Objeto para o formulário (Two-way data binding)
-  novoItem: Item = { id: 0, nome: '', valor: 0, ativo: true};
+  adicionarItem() {
+    if(this.novoItem.nome) {                                                    // Só adiciona se o nome do item não for vazio
+      if (this.novoItem.id > 0) {                                               // Já existe, vai ser uma Alteração (Update)
+        const index = this.itens.findIndex(i => i.id === this.novoItem.id);     // Percorre "itens" e retorna a posição
+                                                                                // do item que tem o mesmo id do "novoItem"
+        if (index !== -1) {                                                     // Se "index" não achou o id (retornou -1), não faz nada.
+          this.itens[index] = {...this.novoItem};                               // Se achou, atualiza o item naquela posição
+        }
+      } else {                                                                  // ID não existe, vai ser um Cadastro (Create)
+        const novoId = this.itens.length > 0                                    // Se já existe pelo menos um item,
+        ? Math.max(...this.itens.map(i => i.id)) + 1                            // o novo ID é o maior ID atual + 1.
+        : 1;                                                                    // Se não existe nenhum item, o novo ID é 1.
 
-  // Operação: Incluir
-  adicionar() {
-    if (this.novoItem.nome) {
-      const listaAtual = this.itens();
-
-      if (this.novoItem.id > 0) { // Se o ID for maior que 0, é um item existente
-
-        //  Atualiza o item existente, substituindo o item antigo pelo novo na lista
-        this.itens.update(lista => lista.map(i => i.id === this.novoItem.id ? { ...this.novoItem } : i));
-
-      } else {
-        // Gerar um novo ID para o item
-        const novoId = listaAtual.length > 0                  // se a lista estiver vazia, o ID é 1
-      ? Math.max(...listaAtual.map(item => item.id)) + 1      // se não, busca o maior ID existente e soma +1
-      : 1;
-                                                              // atualiza o Signal criando uma nova lista
-      this.itens.update(lista => [...lista, {...this.novoItem, id: novoId }]);
+        const itemParaAdicionar = {...this.novoItem, id: novoId};               // Cria um novo item com os dados do "novoItem" e o "novoId".
+        this.itens.push(itemParaAdicionar);                                     // Adiciona na lista de itens.
       }
-
-      this.resetForm();
+      this.resetForm();                                                         // Limpa o formulário para o próximo cadastro ou edição.
     }
   }
 
-  // Operação: Remover
-  remover(id: number) {
-                                                            // se o ID desse item for DIFERENTE do ID que mandei como param,
-                                                            // ele continua na lista. Se for IGUAl, será "filtrado" para fora
-    this.itens.update(lista => lista.filter(item => item.id !== id));
-  }
+  removerItem(id: number) {
+    this.itens = this.itens.filter(i => i.id !== id);                           // Percorre o array "itens" e cria um novo array
+  }                                                                             // que passarem no "filtro": manter todos os ID's
+                                                                                // que forem diferentes do ID que quero tirar.
+
+  prepararEdicao(item: Item) {                                                  // Quando clica no botão "editar"
+    this.novoItem = {...item};                                                  // Copia os dados do item para "novoItem",
+  }                                                                             // agora quando apertar em salvar, o forms vai preenchido
+                                                                                // e o método "adicionarItem" vai entender que é uma edição por causa do ID.
 
   resetForm() {
-    this.novoItem = { id: 0, nome: '', valor: 0, ativo: true };
+    this.novoItem = {id: 0, nome: '', valor: 0, ativo: true};                   // Limpa o formulário, voltando "novoItem" para o estado inicial.
   }
-
-  prepararEdicao(item: Item) {
-    this.novoItem = {...item};                              // Clona o item para evitar complicações diretas
-  }
-
-  protected readonly title = signal('CRUD');
 }
