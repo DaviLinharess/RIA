@@ -8,9 +8,15 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     providePrimeNG({
-      theme: {
-        preset: Aura
-      }
+        theme: {
+            preset: Aura,
+            options: {
+                cssLayer: {
+                    name: 'primeng',
+                    order: 'theme, base, primeng'
+                }
+            }
+        }
     }),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes)

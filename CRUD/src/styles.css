@@ -1,17 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
 
-/* 1. Importa a Inter  */
+/* import da fonte  */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-/* 2. Aplicação no html inteiro*/
-html, body {
-    margin: 0;
-    padding: 0;
-    background-color: #f8fafc;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+/* Aplicação pro html inteiro */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif !important;
 }
 
-/* 3. Componentes do PrimeNG herdam a fonte do body */
-.p-component, .p-inputtext, .p-button, .p-datatable {
-    font-family: inherit !important;
+/* Componentes do PrimeNG herdam a fonte do body */
+.p-component,
+.p-inputtext,
+.p-button,
+.p-datatable {
+  font-family: inherit !important;
 }
+
+@import 'tailwindcss';
+

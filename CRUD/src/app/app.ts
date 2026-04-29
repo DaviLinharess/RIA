@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';               //loops e condicionais
+import { CommonModule } from '@angular/common';               // loops e condicionais
 import { FormsModule } from '@angular/forms';                 // forms (inputs)
 
 //Imports do PrimeNG
