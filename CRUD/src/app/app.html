@@ -1,77 +1,61 @@
-<div class="container-principal">
+<div class="max-w-6xl mx-auto mt-12 p-6">
+
   <p-card header="Gerenciamento de Perfumes" subheader="Projeto Caru - Interfaces Ricas">
 
-    <div class="formulario-entrada">
-      <div class="campo">
-        <label>Nome do Produto</label>
-        <input pInputText [(ngModel)]="novoItem.nome" placeholder="Ex: Natura Kaiak" />
+    <div class="flex flex-col md:flex-row items-end gap-6 my-6">
+      <!-- Campo Nome do produto-->
+      <div class="flex flex-col gap-2 flex-1 w-full">
+        <label class="font-semibold text-slate-600 text-sm">Nome do Produto</label>
+        <input pInputText [(ngModel)]="novoItem.nome" class="w-full" />
       </div>
 
-      <div class="campo">
-        <label>Preço</label>
-        <p-inputNumber [(ngModel)]="novoItem.valor" mode="currency" currency="BRL" locale="pt-BR" />
+      <!-- Campo Preço -->
+      <div class="flex flex-col gap-2 w-full md:w-48">
+        <label class="font-semibold text-slate-600 text-sm">Preço</label>
+        <p-inputNumber [(ngModel)]="novoItem.valor" mode="currency" currency="BRL" class="w-full" />
       </div>
 
-      <div class="campo-booleano">
-        <label>Em Estoque</label>
+      <!-- Booleando Em Estoque -->
+      <div class="flex flex-col items-center gap-2 px-2">
+        <label class="font-semibold text-slate-600 text-sm">Em Estoque</label>
         <p-toggleswitch [(ngModel)]="novoItem.ativo" />
       </div>
 
-      <div class="acoes-formulario">
-        <p-button
-          [label]="novoItem.id > 0 ? 'Salvar Alteração' : 'Cadastrar Item'"
-          [icon]="novoItem.id > 0 ? 'pi pi-save' : 'pi pi-plus'"
-          severity="success"
-          (click)="adicionarItem()" />
+      <!-- Botão que fica Cadastrar/Salvar -->
+      <div class="flex gap-2 pb-1">
+        <p-button [label]="novoItem.id > 0 ? 'Salvar' : 'Cadastrar'"
+                  severity="success"
+                  (click)="adicionarItem()" />
 
-          @if (novoItem.id > 0) {
-            <p-button
-              label="Cancelar"
-              icon="pi pi-times"
-              severity="secondary"
-              [text]="true"
-              (click)="resetForm()" />
-          }
+        @if (novoItem.id > 0) {
+          <p-button label="Cancelar" severity="secondary" [text]="true" (click)="resetForm()" />
+        }
       </div>
     </div>
 
-    <hr class="divisor" />
+    <hr class="border-t border-slate-200 my-8" />
 
-    <p-table [value]="itens"[stripedRows]=true>
-      <ng-template pTemplate="header">
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Preço</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </ng-template>
+    <p-table [value]="itens" [stripedRows]="true">
 
+      <!-- Lista dos Perfumes (id, nome, valor) -->
       <ng-template pTemplate="body" let-item>
-        <tr>
-          <td>{{ item.id }}</td>
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="font-medium">{{ item.id }}</td>
           <td>{{ item.nome }}</td>
           <td>{{ item.valor | currency: 'BRL' }}</td>
           <td>
-            <span [class]="item.ativo ? 'tag-disponivel' : 'tag-esgotado'">
+            <!-- Tag Disponível/Esgotado -->
+            <span [class]="'px-3 py-1 rounded-full text-xs font-bold ' +
+                  (item.ativo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')">
               {{ item.ativo ? 'Disponível' : 'Esgotado' }}
             </span>
           </td>
-          <td class="coluna-acoes">
-            <p-button icon="pi pi-pencil" severity="info" [rounded]="true" [outlined]="true" (click)="prepararEdicao(item)" />
-            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="removerItem(item.id)" />
+          <td class="flex gap-2">
+            <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (click)="prepararEdicao(item)" />
+            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="removerItem(item.id)" />
           </td>
         </tr>
       </ng-template>
-
-      @if (itens.length === 0) {
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5">Nenhum perfume cadastrado no catálogo.</td>
-          </tr>
-        </ng-template>
-      }
     </p-table>
 
   </p-card>
