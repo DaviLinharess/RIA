@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';               // loops e condicionais
-import { FormsModule } from '@angular/forms';                 // forms (inputs)
+
+import { form, FormField, required, minLength } from '@angular/forms/signals';
 
 //Imports do PrimeNG
 import { ButtonModule } from 'primeng/button';
@@ -19,11 +20,18 @@ interface Item {
   ativo: boolean;
 }
 
+// Interface pro Signal do Formulário
+interface PerfumeFormData {
+  nome: string;
+  valor: number | null;
+  ativo: boolean;
+}
+
 @Component({
   selector: 'app-root',
   imports: [
     CommonModule,
-    FormsModule,
+    FormField,
     ButtonModule,
     TableModule,
     InputTextModule,
@@ -36,43 +44,90 @@ interface Item {
 })
 
 export class App {
-  itens: Item[] = [                                                             // Lista de itens, começa com um exemplo
-    {id: 1, nome: 'Exemplo de Item', valor: 99.90, ativo: true}                 // pra mostrar a tabela preenchida.
-  ];
+  // Lista de perfumes cadastrados na tabela
+  itens = signal<Item[]>([
+    { id: 1, nome: 'Natura Homem Sagaz', valor: 189.90, ativo: true },
+    { id: 2, nome: 'Natura Kaiak Aero', valor: 154.00, ativo: false }
+  ]);
 
-  novoItem: Item = {id: 0, nome: '', valor: 0, ativo: true};                    // Objeto para armazenar os dados, começa vazio.
+  idSendoEditado = signal<number>(0);
+
+  // 1.  O sinal que armazena os dados iniciais do formulário
+  perfumeModel = signal<PerfumeFormData>({
+    nome: '',
+    valor: null,
+    ativo: true,
+  });
+
+  // 2. O SIGNAL FORM: Árvore de campos com as validações via schemaPath
+  formPerfume = form(this.perfumeModel, (schemaPath) => {
+    required(schemaPath.nome, { message: "O nome do produto é obrigatório." });
+    minLength(schemaPath.nome, 3, { message: "O nome deve conter pelo menos 3 caracteres." });
+
+    required(schemaPath.valor, { message: "O preço do perfume é obrigatório." });
+  });
+
+  // 3. SIGNAL COMPUTADO: deriva a validade a partir dos estados individuais de cada campo
+  formInvalido = computed(() => {
+    return this.formPerfume.nome().invalid() || this.formPerfume.valor().invalid();
+  });
 
   adicionarItem() {
-    if(this.novoItem.nome) {                                                    // Só adiciona se o nome do item não for vazio
-      if (this.novoItem.id > 0) {                                               // Já existe, vai ser uma Alteração (Update)
-        const index = this.itens.findIndex(i => i.id === this.novoItem.id);     // Percorre "itens" e retorna a posição
-                                                                                // do item que tem o mesmo id do "novoItem"
-        if (index !== -1) {                                                     // Se "index" não achou o id (retornou -1), não faz nada.
-          this.itens[index] = {...this.novoItem};                               // Se achou, atualiza o item naquela posição
-        }
-      } else {                                                                  // ID não existe, vai ser um Cadastro (Create)
-        const novoId = this.itens.length > 0                                    // Se já existe pelo menos um item,
-        ? Math.max(...this.itens.map(i => i.id)) + 1                            // o novo ID é o maior ID atual + 1.
-        : 1;                                                                    // Se não existe nenhum item, o novo ID é 1.
-
-        const itemParaAdicionar = {...this.novoItem, id: novoId};               // Cria um novo item com os dados do "novoItem" e o "novoId".
-        this.itens.push(itemParaAdicionar);                                     // Adiciona na lista de itens.
-      }
-      this.resetForm();                                                         // Limpa o formulário para o próximo cadastro ou edição.
+    // Impede o envio se o sinal computado indicar que há erros
+    if (this.formInvalido()) {
+      return;
     }
+
+    const dadosDoForm = this.perfumeModel();
+
+    if (this.idSendoEditado() > 0) {
+      // Modo Alterar usando a mutação controlada de sinal .update()
+      this.itens.update(lista => lista.map(item =>
+        item.id === this.idSendoEditado()
+          ? { id: item.id, nome: dadosDoForm.nome, valor: dadosDoForm.valor ?? 0, ativo: dadosDoForm.ativo }
+          : item
+      ));
+    } else {
+      // Modo Incluir
+      const novoId = this.itens().length > 0
+        ? Math.max(...this.itens().map(i => i.id)) + 1
+        : 1;
+
+      this.itens.update(lista => [...lista, {
+        id: novoId,
+        nome: dadosDoForm.nome,
+        valor: dadosDoForm.valor ?? 0,
+        ativo: dadosDoForm.ativo
+      }]);
+    }
+
+    this.resetForm();
   }
 
   removerItem(id: number) {
-    this.itens = this.itens.filter(i => i.id !== id);                           // Percorre o array "itens" e cria um novo array
-  }                                                                             // que passarem no "filtro": manter todos os ID's
-                                                                                // que forem diferentes do ID que quero tirar.
+    this.itens.update(lista => lista.filter(item => item.id !== id));
+    if (this.idSendoEditado() === id) {
+      this.resetForm();
+    }
+  }
 
-  prepararEdicao(item: Item) {                                                  // Quando clica no botão "editar"
-    this.novoItem = {...item};                                                  // Copia os dados do item para "novoItem",
-  }                                                                             // agora quando apertar em salvar, o forms vai preenchido
-                                                                                // e o método "adicionarItem" vai entender que é uma edição por causa do ID.
+  prepararEdicao(item: Item) {
+    this.idSendoEditado.set(item.id);
+
+    // Atualiza o Signal e a árvore do formulário reflete as mudanças
+    this.perfumeModel.set({
+      nome: item.nome,
+      valor: item.valor,
+      ativo: item.ativo
+    });
+  }
 
   resetForm() {
-    this.novoItem = {id: 0, nome: '', valor: 0, ativo: true};                   // Limpa o formulário, voltando "novoItem" para o estado inicial.
+    this.idSendoEditado.set(0);
+    this.perfumeModel.set({
+      nome: '',
+      valor: null,
+      ativo: true
+    });
   }
 }
