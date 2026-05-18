@@ -52,28 +52,28 @@ export class App {
 
   idSendoEditado = signal<number>(0);
 
-  // 1.  O sinal que armazena os dados iniciais do formulário
+  // O signal que armazena os dados iniciais do formulário (vazio)
   perfumeModel = signal<PerfumeFormData>({
     nome: '',
     valor: null,
     ativo: true,
   });
 
-  // 2. O SIGNAL FORM: Árvore de campos com as validações via schemaPath
-  formPerfume = form(this.perfumeModel, (schemaPath) => {
+  // O SIGNAL FORM
+  formPerfume = form(this.perfumeModel, (schemaPath) => { //schemaPath para as validações
     required(schemaPath.nome, { message: "O nome do produto é obrigatório." });
     minLength(schemaPath.nome, 3, { message: "O nome deve conter pelo menos 3 caracteres." });
 
     required(schemaPath.valor, { message: "O preço do perfume é obrigatório." });
   });
 
-  // 3. SIGNAL COMPUTADO: deriva a validade a partir dos estados individuais de cada campo
+  // SIGNAL COMPUTADO: computed = apenas leitura, serve pra calcular um valor vindo de outro signal
   formInvalido = computed(() => {
     return this.formPerfume.nome().invalid() || this.formPerfume.valor().invalid();
   });
 
   adicionarItem() {
-    // Impede o envio se o sinal computado indicar que há erros
+    // Não deixa o envio se o sinal computado indicar que há erros
     if (this.formInvalido()) {
       return;
     }
@@ -81,14 +81,14 @@ export class App {
     const dadosDoForm = this.perfumeModel();
 
     if (this.idSendoEditado() > 0) {
-      // Modo Alterar usando a mutação controlada de sinal .update()
-      this.itens.update(lista => lista.map(item =>
-        item.id === this.idSendoEditado()
+      // Modo Alterar usando .update()
+      this.itens.update(lista => lista.map(item => // recebe o valor antigo da lista
+        item.id === this.idSendoEditado()          // e espera que retorne uma lista nova.
           ? { id: item.id, nome: dadosDoForm.nome, valor: dadosDoForm.valor ?? 0, ativo: dadosDoForm.ativo }
           : item
       ));
     } else {
-      // Modo Incluir
+      // Modo Incluir (usa o ... (spread))
       const novoId = this.itens().length > 0
         ? Math.max(...this.itens().map(i => i.id)) + 1
         : 1;
@@ -114,9 +114,9 @@ export class App {
   prepararEdicao(item: Item) {
     this.idSendoEditado.set(item.id);
 
-    // Atualiza o Signal e a árvore do formulário reflete as mudanças
-    this.perfumeModel.set({
-      nome: item.nome,
+    // Atualiza o Signal
+    this.perfumeModel.set({ //"update" pega as informações antigas, já o "set"
+      nome: item.nome,      // coloca por cima o valor novo, independente do antigo
       valor: item.valor,
       ativo: item.ativo
     });
