@@ -42,7 +42,7 @@
       <div class="flex gap-2 pb-10">
         <p-button [label]="idSendoEditado() > 0 ? 'Salvar' : 'Cadastrar'"
                   severity="success"
-                  [disabled]="formInvalido()"
+                  [disabled]="formPerfume().invalid()"
                   class="block h-11"
                   (click)="adicionarItem()" />
 

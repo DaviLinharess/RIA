@@ -67,14 +67,10 @@ export class App {
     required(schemaPath.valor, { message: "O preço do perfume é obrigatório." });
   });
 
-  // SIGNAL COMPUTADO: computed = apenas leitura, serve pra calcular um valor vindo de outro signal
-  formInvalido = computed(() => {
-    return this.formPerfume.nome().invalid() || this.formPerfume.valor().invalid();
-  });
 
   adicionarItem() {
     // Não deixa o envio se o sinal computado indicar que há erros
-    if (this.formInvalido()) {
+    if (this.formPerfume().invalid()) {
       return;
     }
 
