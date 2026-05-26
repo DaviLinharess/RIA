@@ -1,17 +1,12 @@
 import { Component, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';               // loops e condicionais
 
-import { form, FormField, required, minLength } from '@angular/forms/signals';
-
-//Imports do PrimeNG
-import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
+//Import do PrimeNG
 import { CardModule } from 'primeng/card';
 
-
+// Imports dos componentes criados
+import { PerfumeFormComponent } from './components/perfume-form/perfume-form';
+import { PerfumeListComponent } from './components/perfume-list/perfume-list';
+import { PerfumeDetailComponent } from './components/perfume-detail/perfume-detail';
 
 interface Item {
   id: number;
@@ -29,101 +24,64 @@ interface PerfumeFormData {
 
 @Component({
   selector: 'app-root',
-  imports: [
-    CommonModule,
-    FormField,
-    ButtonModule,
-    TableModule,
-    InputTextModule,
-    InputNumberModule,
-    ToggleSwitchModule,
-    CardModule
-  ],
+  standalone: true,
+  imports: [CardModule, PerfumeFormComponent, PerfumeListComponent, PerfumeDetailComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 
 export class App {
-  // Lista de perfumes cadastrados na tabela
+  // A lista oficial
   itens = signal<Item[]>([
     { id: 1, nome: 'Natura Homem Sagaz', valor: 189.90, ativo: true },
     { id: 2, nome: 'Natura Kaiak Aero', valor: 154.00, ativo: false }
   ]);
 
+  // Sinais de controle que servem para enviar dados aos filhos
   idSendoEditado = signal<number>(0);
+  itemSelecionadoParaEditar = signal<Item | null>(null);
+  itemSelecionadoParaDetalhar = signal<Item | null>(null);
 
-  // O signal que armazena os dados iniciais do formulário (vazio)
-  perfumeModel = signal<PerfumeFormData>({
-    nome: '',
-    valor: null,
-    ativo: true,
-  });
-
-  // O SIGNAL FORM
-  formPerfume = form(this.perfumeModel, (schemaPath) => { //schemaPath para as validações
-    required(schemaPath.nome, { message: "O nome do produto é obrigatório." });
-    minLength(schemaPath.nome, 3, { message: "O nome deve conter pelo menos 3 caracteres." });
-
-    required(schemaPath.valor, { message: "O preço do perfume é obrigatório." });
-  });
-
-
-  adicionarItem() {
-    // Não deixa o envio se o sinal computado indicar que há erros
-    if (this.formPerfume().invalid()) {
-      return;
-    }
-
-    const dadosDoForm = this.perfumeModel();
-
+  // Quando o componente de formulário faz o "salvar"
+  salvarFormulario(dadosForm: { nome: string; valor: number; ativo: boolean }) {
     if (this.idSendoEditado() > 0) {
-      // Modo Alterar usando .update()
-      this.itens.update(lista => lista.map(item => // recebe o valor antigo da lista
-        item.id === this.idSendoEditado()          // e espera que retorne uma lista nova.
-          ? { id: item.id, nome: dadosDoForm.nome, valor: dadosDoForm.valor ?? 0, ativo: dadosDoForm.ativo }
+      // ALTERAR
+      this.itens.update(lista => lista.map(item =>
+        item.id === this.idSendoEditado()
+          ? { id: item.id, ...dadosForm }
           : item
       ));
     } else {
-      // Modo Incluir (usa o ... (spread))
+      // INCLUIR
       const novoId = this.itens().length > 0
         ? Math.max(...this.itens().map(i => i.id)) + 1
         : 1;
 
-      this.itens.update(lista => [...lista, {
-        id: novoId,
-        nome: dadosDoForm.nome,
-        valor: dadosDoForm.valor ?? 0,
-        ativo: dadosDoForm.ativo
-      }]);
+      this.itens.update(lista => [...lista, { id: novoId, ...dadosForm }]);
     }
 
-    this.resetForm();
-  }
-
-  removerItem(id: number) {
-    this.itens.update(lista => lista.filter(item => item.id !== id));
-    if (this.idSendoEditado() === id) {
-      this.resetForm();
-    }
-  }
-
-  prepararEdicao(item: Item) {
-    this.idSendoEditado.set(item.id);
-
-    // Atualiza o Signal
-    this.perfumeModel.set({ //"update" pega as informações antigas, já o "set"
-      nome: item.nome,      // coloca por cima o valor novo, independente do antigo
-      valor: item.valor,
-      ativo: item.ativo
-    });
-  }
-
-  resetForm() {
+    // Limpa os inputs
     this.idSendoEditado.set(0);
-    this.perfumeModel.set({
-      nome: '',
-      valor: null,
-      ativo: true
-    });
+    this.itemSelecionadoParaEditar.set(null);
+  }
+
+  // Quando o usuário clica no lápis (editar)
+  capturarEdicao(item: Item) {
+    this.idSendoEditado.set(item.id);
+    this.itemSelecionadoParaEditar.set(item);
+  }
+
+  // Quando o usuário clica na lixeira (excluir))
+  capturarRemocao(id: number) {
+    this.itens.update(lista => lista.filter(item => item.id !== id));
+
+    // Se o item deletado estava aberto no formulário ou nos detalhes, limpa a tela
+    if (this.idSendoEditado() === id) {
+      this.idSendoEditado.set(0);
+      this.itemSelecionadoParaEditar.set(null);
+    }
+    if (this.itemSelecionadoParaDetalhar()?.id === id) {
+      this.itemSelecionadoParaDetalhar.set(null);
+    }
   }
 }

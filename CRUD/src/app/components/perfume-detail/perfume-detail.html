@@ -1,0 +1,16 @@
+@if (perfume()) {
+  <div class="my-6 p-4 bg-slate-50 rounded-lg border border-slate-200 relative">
+    <h3 class="font-bold text-slate-800 text-base mb-2">🔍 Detalhes do Produto</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-slate-600">
+      <p><strong>ID:</strong> {{ perfume()?.id }}</p>
+      <p><strong>Nome Técnico:</strong> {{ perfume()?.nome }}</p>
+      <p><strong>Preço de Tabela:</strong> {{ perfume()?.valor | currency: 'BRL' }}</p>
+    </div>
+
+    <button class="absolute top-3 right-3 text-xs text-slate-400 hover:text-slate-600 font-medium"
+            (click)="fecharEvent.emit()">
+      Fechar Visão ✕
+    </button>
+  </div>
+}
