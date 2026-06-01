@@ -1,25 +1,13 @@
 <div class="max-w-6xl mx-auto mt-12 p-6">
-  <p-card header="Gerenciamento de Perfumes" subheader="Projeto Caru - RIA">
+  <p-card header="Gerenciamento de Perfumes" subheader="Projeto Caru">
 
-    <app-perfume-form
-      [(idSendoEditado)]="idSendoEditado"
-      [itemParaEditar]="itemSelecionadoParaEditar()"
-      (salvarEvent)="salvarFormulario($event)">
-    </app-perfume-form>
+    <app-perfume-form></app-perfume-form>
 
-    <app-perfume-detail
-      [perfume]="itemSelecionadoParaDetalhar()"
-      (fecharEvent)="itemSelecionadoParaDetalhar.set(null)">
-    </app-perfume-detail>
+    <app-perfume-detail></app-perfume-detail>
 
     <hr class="border-t border-slate-200 my-8" />
 
-    <app-perfume-list
-      [listaDeItens]="itens()"
-      (editarEvent)="capturarEdicao($event)"
-      (detalharEvent)="itemSelecionadoParaDetalhar.set($event)"
-      (removerEvent)="capturarRemocao($event)">
-    </app-perfume-list>
+    <app-perfume-list></app-perfume-list>
 
   </p-card>
 </div>

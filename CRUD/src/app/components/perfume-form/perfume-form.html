@@ -36,13 +36,13 @@
   </div>
 
   <div class="flex gap-2 pb-10">
-    <p-button [label]="idSendoEditado() > 0 ? 'Salvar' : 'Cadastrar'"
+    <p-button [label]="perfumeService.idSendoEditado() > 0 ? 'Salvar' : 'Cadastrar'"
               severity="success"
               [disabled]="formInvalido()"
               class="block h-11"
               (click)="submeter()" />
 
-    @if (idSendoEditado() > 0) {
+    @if (perfumeService.idSendoEditado() > 0) {
       <p-button label="Cancelar" severity="secondary" [text]="true" class="block h-11" (click)="cancelar()" />
     }
   </div>

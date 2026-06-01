@@ -1,15 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// PrimeNG
 import { ButtonModule } from 'primeng/button';
-
-interface Item {
-  id: number;
-  nome: string;
-  valor: number;
-  ativo: boolean;
-}
+import { PerfumeService } from '../../services/perfume';
 
 @Component({
   selector: 'app-perfume-detail',
@@ -18,9 +10,5 @@ interface Item {
   templateUrl: './perfume-detail.html'
 })
 export class PerfumeDetailComponent {
-  // Input que recebe o perfume selecionado
-  perfume = input<Item | null>(null);
-
-  // Output que avisa ao pai que o painel foi fechado
-  fecharEvent = output<void>();
+  constructor(public perfumeService: PerfumeService) {}
 }
