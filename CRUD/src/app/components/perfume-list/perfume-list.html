@@ -14,20 +14,15 @@
       <td>{{ item.nome }}</td>
       <td>{{ item.valor | currency: 'BRL' }}</td>
       <td>
-        <!-- Tag de Status  -->
         <span [class]="'px-3 py-1 rounded-full text-xs font-bold ' +
               (item.ativo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')">
           {{ item.ativo ? 'Disponível' : 'Esgotado' }}
         </span>
       </td>
       <td class="flex gap-2">
-        <!-- Botão Detalhar (Lupa) -->
-        <p-button icon="pi pi-search" [rounded]="true" [text]="true" severity="info" (click)="perfumeService.detalhar(item)" />
-
-        <!-- Botão Editar (Lápis) -->
-        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (click)="perfumeService.selecionarParaEditar(item)" />
-        <!-- Botão Remover (Lixeira) -->
-        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="perfumeService.remover(item.id)" />
+        <p-button icon="pi pi-search" [rounded]="true" [text]="true" severity="info" (click)="detalharEvent.emit(item)" />
+        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (click)="editarEvent.emit(item)" />
+        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="deletar(item.id)" />
       </td>
     </tr>
   </ng-template>

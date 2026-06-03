@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 
-
-import { PerfumeService } from '../../services/perfume';
+import { PerfumeService, Item } from '../../services/perfume';
 
 @Component({
   selector: 'app-perfume-list',
@@ -13,6 +13,14 @@ import { PerfumeService } from '../../services/perfume';
   templateUrl: './perfume-list.html'
 })
 export class PerfumeListComponent {
-  // Injeção do serviço para usá-lo direto no template HTML
+  editarEvent = output<Item>();
+  detalharEvent = output<Item>();
+  removerEvent = output<number>();
+
   constructor(public perfumeService: PerfumeService) {}
+
+  deletar(id: number) {
+    this.perfumeService.remover(id);
+    this.removerEvent.emit(id);
+  }
 }

@@ -1,14 +1,22 @@
-import { Component, effect, signal, computed } from '@angular/core';
+import { Component, input, output, model, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { form, FormField, required, minLength } from '@angular/forms/signals';
+
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
-
 import { PerfumeService } from '../../services/perfume';
 
-interface PerfumeFormData { nome: string; valor: number | null; ativo: boolean; }
+interface Item { id: number;
+                nome: string;
+                valor: number;
+                ativo: boolean;
+              }
+interface PerfumeFormData { nome: string;
+                            valor: number | null;
+                            ativo: boolean;
+                          }
 
 @Component({
   selector: 'app-perfume-form',
@@ -17,6 +25,10 @@ interface PerfumeFormData { nome: string; valor: number | null; ativo: boolean; 
   templateUrl: './perfume-form.html'
 })
 export class PerfumeFormComponent {
+  idSendoEditado = model<number>(0);
+  itemParaEditar = input<Item | null>(null);
+  onSalvarSucesso = output<void>();
+
   perfumeModel = signal<PerfumeFormData>({ nome: '', valor: null, ativo: true });
 
   formPerfume = form(this.perfumeModel, (schemaPath) => {
@@ -27,12 +39,10 @@ export class PerfumeFormComponent {
 
   formInvalido = computed(() => this.formPerfume.nome().invalid() || this.formPerfume.valor().invalid());
 
-  // Injeção do serviço pelo construtor
-  constructor(public perfumeService: PerfumeService) {
+  constructor(private perfumeService: PerfumeService) {
     effect(() => {
-      // Ouve o sinal do serviço
-      const item = this.perfumeService.itemSelecionadoParaEditar();
-      if (item && this.perfumeService.idSendoEditado() > 0) {
+      const item = this.itemParaEditar();
+      if (item && this.idSendoEditado() > 0) {
         this.perfumeModel.set({ nome: item.nome, valor: item.valor, ativo: item.ativo });
       }
     });
@@ -40,21 +50,21 @@ export class PerfumeFormComponent {
 
   submeter() {
     if (this.formInvalido()) return;
-
     const dados = this.perfumeModel();
+    const id = this.idSendoEditado();
 
-    // Garantir que 'valor' seja um number
-    this.perfumeService.salvar({
-      nome: dados.nome,
-      valor: dados.valor ?? 0, // Se for null, assume 0 com segurança
-      ativo: dados.ativo
-    });
+    if (id > 0) {
+      this.perfumeService.atualizar(id, { nome: dados.nome, valor: dados.valor ?? 0, ativo: dados.ativo });
+    } else {
+      this.perfumeService.inserir({ nome: dados.nome, valor: dados.valor ?? 0, ativo: dados.ativo });
+    }
 
+    this.onSalvarSucesso.emit();
     this.resetForm();
   }
 
   cancelar() {
-    this.perfumeService.limparEdicao();
+    this.idSendoEditado.set(0);
     this.resetForm();
   }
 

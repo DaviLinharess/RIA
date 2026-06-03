@@ -1,7 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { PerfumeService } from '../../services/perfume';
+
+interface Item { id: number;
+                  nome: string;
+                  valor: number;
+                  ativo: boolean;
+                }
 
 @Component({
   selector: 'app-perfume-detail',
@@ -10,5 +15,6 @@ import { PerfumeService } from '../../services/perfume';
   templateUrl: './perfume-detail.html'
 })
 export class PerfumeDetailComponent {
-  constructor(public perfumeService: PerfumeService) {}
+  perfume = input<Item | null>(null);
+  fecharEvent = output<void>();
 }
