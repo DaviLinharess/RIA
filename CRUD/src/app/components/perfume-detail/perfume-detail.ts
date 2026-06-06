@@ -1,12 +1,10 @@
-import { Component, input, output } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { ButtonModule } from 'primeng/button';
 
-interface Item { id: number;
-                  nome: string;
-                  valor: number;
-                  ativo: boolean;
-                }
+import { PerfumeService, Item } from '../../services/perfume';
 
 @Component({
   selector: 'app-perfume-detail',
@@ -14,7 +12,30 @@ interface Item { id: number;
   imports: [CommonModule, ButtonModule],
   templateUrl: './perfume-detail.html'
 })
-export class PerfumeDetailComponent {
-  perfume = input<Item | null>(null);
-  fecharEvent = output<void>();
+export class PerfumeDetailComponent implements OnInit {
+
+  perfume = signal<Item | null>(null);
+
+  constructor(
+    private perfumeService: PerfumeService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {   //Pega o ID que veio da URL pra carregar os detalhes
+      const idParam = params.get('id');
+      if (idParam) {
+        const id = Number(idParam);
+        const itemencontrado = this.perfumeService.itens().find(p => p.id === id);
+        if (itemencontrado) {
+          this.perfume.set(itemencontrado);
+        }
+      }
+    });
+  }
+
+  voltar() {
+    this.router.navigate(['/']);
+  }
 }
