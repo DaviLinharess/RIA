@@ -11,5 +11,5 @@ export const routes: Routes = [
   { path: 'perfumes/editar/:id', component: PerfumeFormComponent },    // editar
   { path: 'perfumes/detalhe/:id', component: PerfumeDetailComponent }, // detalhe
 
-  { path: '**', redirectTo: '' } // rota "coringa" pra caminhos inexistentes até a raiz
+  { path: '**', redirectTo: '' } // rota "coringa" pra caminhos inexistentes
 ]

@@ -1,5 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 
@@ -12,7 +13,7 @@ export const appConfig: ApplicationConfig = {
             preset: Aura,
             options: {
                 darkModeSelector: '.none',
-                
+
                 cssLayer: {
                     name: 'primeng',
                     order: 'theme, base, primeng'
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
         }
     }),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes)
+    provideRouter(routes),
+    provideHttpClient()
   ]
 };
