@@ -1,10 +1,12 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 
 import { routes } from './app.routes';
+
+import { jwtInterceptor } from './interceptors/jwt';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,7 +15,6 @@ export const appConfig: ApplicationConfig = {
             preset: Aura,
             options: {
                 darkModeSelector: '.none',
-
                 cssLayer: {
                     name: 'primeng',
                     order: 'theme, base, primeng'
@@ -23,6 +24,8 @@ export const appConfig: ApplicationConfig = {
     }),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient()
+
+    // provider blindando todas as requisições HTTP do app com o Token
+    provideHttpClient(withInterceptors([jwtInterceptor]))
   ]
 };

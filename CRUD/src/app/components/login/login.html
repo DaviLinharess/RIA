@@ -1,0 +1,26 @@
+<div class="flex justify-center items-center min-h-[70vh] bg-slate-50 p-4">
+  <p-card header="Autenticação" subheader="Área Restrita do Sistema" class="w-full max-w-md block">
+
+    <div class="flex flex-col gap-4 mt-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-slate-600">Nome de Usuário</label>
+        <input pInputText [(ngModel)]="username" placeholder="Digite seu usuário do Django" class="h-11 w-full" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-slate-600">Senha de Acesso</label>
+        <input pInputText type="password" [(ngModel)]="password" placeholder="••••••••" class="h-11 w-full" />
+      </div>
+
+      @if (erroMensagem()) {
+        <p class="text-xs text-red-500 font-medium bg-red-50 p-2 rounded border border-red-100">
+          {{ erroMensagem() }}
+        </p>
+      }
+
+      <p-button label="Entrar no Sistema" severity="primary" class="w-full mt-2 block h-11"
+                [disabled]="!username || !password" (click)="realizarLogin()" />
+    </div>
+
+  </p-card>
+</div>

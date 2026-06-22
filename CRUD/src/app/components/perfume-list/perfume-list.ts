@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -12,11 +12,15 @@ import { PerfumeService, Item } from '../../services/perfume';
   imports: [CommonModule, TableModule, ButtonModule],
   templateUrl: './perfume-list.html'
 })
-export class PerfumeListComponent {
+export class PerfumeListComponent implements OnInit {
   constructor(
     public perfumeService: PerfumeService,
     private router: Router
   ) {}
+
+  ngOnInit() {
+    this.perfumeService.listar();
+  }
 
   irParaIncluir() {
     this.router.navigate(['/perfumes/incluir']);

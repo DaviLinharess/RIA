@@ -1,7 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 
+import { AuthService } from './services/auth';
 
 interface Item { id: number;
                 nome: string;
@@ -12,7 +14,7 @@ interface Item { id: number;
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CardModule, RouterOutlet],
+  imports: [CardModule, ButtonModule, RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -20,6 +22,12 @@ export class App {
   idSendoEditado = signal<number>(0);
   itemSelecionadoParaEditar = signal<Item | null>(null);
   itemSelecionadoParaDetalhar = signal<Item | null>(null);
+
+  constructor(public authService: AuthService) {}
+
+  logout() {
+    this.authService.logout();
+  }
 
   //funções auxiliares
   capturarEdicao(item: Item) {

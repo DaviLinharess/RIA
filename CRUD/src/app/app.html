@@ -1,6 +1,10 @@
 <div class="max-w-6xl mx-auto mt-12 p-6">
   <p-card header="Gerenciamento de Perfumes" subheader="Projeto Caru">
 
+    <div class="flex justify-end mb-4">
+      <button pButton type="button" label="Sair" severity="danger" (click)="logout()"></button>
+    </div>
+
     <router-outlet></router-outlet>
 
   </p-card>
